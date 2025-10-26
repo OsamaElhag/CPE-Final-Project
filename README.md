@@ -1,4 +1,6 @@
-Code 
+Welcome to our CPE final project repository!!
+
+This is a game designed to teach people Arabic and all models and code will be included here.
 
 Some files are too large such as some models from sketchfab so they will be linked here.
 
