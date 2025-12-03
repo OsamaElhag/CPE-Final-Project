@@ -4,57 +4,104 @@ export class GameManager extends Component {
     static TypeName = 'GameManager';
 
     static Properties = {
-        playerRoot: Property.object(),
-        trustText: Property.object()   // <--- NEW
+        trustText: Property.object()
     };
 
     start() {
-        /* Global state */
-        this.trust = 0;
+        console.log("GameManager initialized");
 
-        /* Global constants */
+        /* ------------------------------------------
+           PERSISTENT TRUST INITIALIZATION
+        ------------------------------------------- */
+
+        // If trust was never set before, initialize once
+        if (this.engine.gameTrust === undefined) {
+            this.engine.gameTrust = 0;
+        }
+
+        // Local reference mirrors global engine trust
+        this.trust = this.engine.gameTrust;
+
+        /* ------------------------------------------ */
+
+        /* Trust requirements per level */
         this.levelRequirements = [0, 10, 20, 30, 40, 50];
 
-        /* Scene names placeholder */
-        this.levelSceneNames = ["", "", "", "", "", ""];
+        /* Scene filenames (optional, can be selected in wonderland isntead) */
+        this.levelSceneNames = [
+            "level1.bin",
+            "level2.bin",
+            "level3.bin",
+            "level4.bin",
+            "level5.bin",
+            "level6.bin"
+        ];
 
-        this.updateTrustText();   // Display "0" at start
-
-        console.log("GameManager initialized");
+        // Update UI at start
+        this.updateTrustText();
     }
 
-    /* Increase trust */
+    /* ------------------------------------------
+       TRUST MANIPULATION
+    ------------------------------------------- */
+
     addTrust(amount) {
         this.trust += amount;
+
+        /* Update global value so it persists across scenes */
+        this.engine.gameTrust = this.trust;
+
         this.updateTrustText();
-        console.log("Trust updated:", this.trust);
+
+        console.log(`Trust updated: ${this.trust}`);
     }
 
-    /* Getter */
     getTrust() {
         return this.trust;
     }
 
-    /* Requirement getter */
+    /* ------------------------------------------
+       LEVEL REQUIREMENTS
+    ------------------------------------------- */
+
     getRequirement(levelIndex) {
         return this.levelRequirements[levelIndex];
     }
 
-    /* Update the UI text */
+    /* ------------------------------------------
+       UPDATE UI TEXT
+    ------------------------------------------- */
+
     updateTrustText() {
         if (!this.trustText) return;
 
         const txt = this.trustText.getComponent('text');
         if (!txt) {
-            console.error("trustText object has no text component!");
+            console.error("trustText object has no 'text' component!");
             return;
         }
 
         txt.text = `Trust: ${this.trust}`;
     }
 
+    /* ------------------------------------------
+       SCENE LOADING SUPPORT
+    ------------------------------------------- */
+
     loadLevelScene(levelIndex) {
         const sceneName = this.levelSceneNames[levelIndex];
-        console.warn("Scene loading not implemented yet:", sceneName);
+
+        if (!sceneName || sceneName.length === 0) {
+            console.error("Scene name missing for level:", levelIndex);
+            return;
+        }
+
+        console.log("Loading scene:", sceneName);
+
+        try {
+            this.engine.scene.load(sceneName);
+        } catch (err) {
+            console.error("Scene FAILED to load:", err);
+        }
     }
 }
