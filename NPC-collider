@@ -1,0 +1,36 @@
+import {Component, Property} from '@wonderlandengine/api';
+
+export class NpcCollisionSpeaker extends Component {
+    static TypeName = 'npc-collision-speaker';
+    static Properties = {
+        player: Property.object({required: true}),
+        greetingAudio: Property.object({required: true}),
+    };
+
+    start() {
+        this._collision = this.object.getComponent('collision');
+        this._audioSource = this.greetingAudio.getComponent('audio-source');
+        this._hasSpoken = false;
+
+        if (!this._collision) {
+            console.error("NPC has no collision component!");
+        }
+        if (!this._audioSource) {
+            console.error("Greeting object has no audio source!");
+        }
+    }
+
+    update(dt) {
+        if (this._hasSpoken) return;
+
+        const overlaps = this._collision.queryOverlaps();
+        for (const other of overlaps) {
+            if (other.object === this.player) {
+                console.log("Player collided with NPC → playing audio");
+                this._audioSource.play();
+                this._hasSpoken = true;
+                return;
+            }
+        }
+    }
+}
