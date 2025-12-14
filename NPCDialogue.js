@@ -38,7 +38,7 @@ export class NPCDialogue extends Component {
 
         // Get GameManager
         this._gm = this.gameManagerObj
-            ? this.gameManagerObj.getComponent('GameManagerTester')
+            ? this.gameManagerObj.getComponent('GameManager')
             : null;
 
         if (!this._gm)
@@ -144,4 +144,5 @@ export class NPCDialogue extends Component {
         this._state = "IDLE";
         console.log("[NPCDialogue] Stage completed successfully!");
     }
+
 }
