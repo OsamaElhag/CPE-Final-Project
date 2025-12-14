@@ -1,33 +1,28 @@
 import { Component, Property } from '@wonderlandengine/api';
 
-export class GameManager extends Component {
-    static TypeName = 'GameManager';
+export class GameManagerTester extends Component {
+    static TypeName = 'GameManagerTester';
 
     static Properties = {
+        // UI object used to display the current trust value
         trustText: Property.object()
     };
 
     start() {
-        console.log("GameManager initialized");
+        console.log("GameManagerTester initialized");
 
-        /* ------------------------------------------
-           PERSISTENT TRUST INITIALIZATION
-        ------------------------------------------- */
-
-        // If trust was never set before, initialize once
+        // Initialize persistent trust value if it does not already exist
         if (this.engine.gameTrust === undefined) {
             this.engine.gameTrust = 0;
         }
 
-        // Local reference mirrors global engine trust
+        // Mirror the global trust value locally
         this.trust = this.engine.gameTrust;
 
-        /* ------------------------------------------ */
-
-        /* Trust requirements per level */
+        // Trust thresholds required to unlock each level
         this.levelRequirements = [0, 10, 20, 30, 40, 50];
 
-        /* Scene filenames (optional, can be selected in wonderland isntead) */
+        // Scene file names corresponding to each level
         this.levelSceneNames = [
             "level1.bin",
             "level2.bin",
@@ -37,41 +32,32 @@ export class GameManager extends Component {
             "level6.bin"
         ];
 
-        // Update UI at start
+        // Update the trust UI when the game starts
         this.updateTrustText();
     }
 
-    /* ------------------------------------------
-       TRUST MANIPULATION
-    ------------------------------------------- */
-
+    // Increase the trust value and persist it across scenes
     addTrust(amount) {
         this.trust += amount;
 
-        /* Update global value so it persists across scenes */
+        // Store the updated value on the engine for persistence
         this.engine.gameTrust = this.trust;
 
         this.updateTrustText();
-
         console.log(`Trust updated: ${this.trust}`);
     }
 
+    // Return the current trust value
     getTrust() {
         return this.trust;
     }
 
-    /* ------------------------------------------
-       LEVEL REQUIREMENTS
-    ------------------------------------------- */
-
+    // Return the trust requirement for a given level
     getRequirement(levelIndex) {
         return this.levelRequirements[levelIndex];
     }
 
-    /* ------------------------------------------
-       UPDATE UI TEXT
-    ------------------------------------------- */
-
+    // Update the on-screen trust text
     updateTrustText() {
         if (!this.trustText) return;
 
@@ -84,10 +70,7 @@ export class GameManager extends Component {
         txt.text = `Trust: ${this.trust}`;
     }
 
-    /* ------------------------------------------
-       SCENE LOADING SUPPORT
-    ------------------------------------------- */
-
+    // Load the scene associated with a given level
     loadLevelScene(levelIndex) {
         const sceneName = this.levelSceneNames[levelIndex];
 
@@ -101,7 +84,7 @@ export class GameManager extends Component {
         try {
             this.engine.scene.load(sceneName);
         } catch (err) {
-            console.error("Scene FAILED to load:", err);
+            console.error("Scene failed to load:", err);
         }
     }
 }
